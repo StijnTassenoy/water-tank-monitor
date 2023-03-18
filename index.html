@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Tank</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/screen.css">
+
+
+</head>
+<body class="">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="https://avatars.githubusercontent.com/u/39425214?v=4" width="30" height="30" alt="">
+            Dashboard
+        </a>
+    </nav>
+
+    <div class="container">
+
+        <div class="card-deck">
+
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Tank</h5>
+                <div class="progress progress-bar-vertical">
+                    <div id="tank_progress" class="progress-bar progress-bar-danger bg-info progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 75%;">
+                    <span class="sr-only">40%</span>
+                    </div>
+                </div>
+                <p id="filled_percentage">Tank is filled up for: <span id="fill">{{fill}}</span>cm (<span id="percentage">{{percentage}}</span>%)</p>
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">Last updated: <span id="timestamp">{{timestamp}}</span></small>
+              </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="./assets/js/script.js"></script>
+
+</body>
+</html>

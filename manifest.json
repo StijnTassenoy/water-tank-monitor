@@ -1,0 +1,9 @@
+{
+    "name": "Water Tank",
+    "short_name": "WT",
+    "theme_color": "#21f3ba",
+    "background_color": "#11f1dd",
+    "display": "minimal-ui",
+    "scope": "/",
+    "start_url": "/"
+  }
