@@ -1,15 +1,16 @@
 "use strict";
 
-console.log(percentage)
+let refreshInterval = 5000;
 
-function updateValues() {
-    fetch("http://192.168.0.18/distance")
+function updateCurrentTank() {
+    fetch("/tank_data")
         .then(response => response.json())
         .then(values => {
+            console.log("Distance: " + values.distance + " Fill: " + values.fill + " Percentage: " + values.percentage)
+
             document.getElementById("fill").innerHTML = values.fill;
             document.getElementById("percentage").innerHTML = values.percentage;
-            document.getElementById("tank_progress").style.width = values.percentage + "%";
-            console.log("Distance: " + values.distance + " Fill: " + values.fill + " Percentage: " + values.percentage)
+            document.getElementById("tank_progress").style.height = values.percentage + "%";
 
             let timestamp = new Date().toLocaleString();
             document.getElementById("timestamptank").innerHTML = timestamp;
@@ -18,31 +19,50 @@ function updateValues() {
             console.error(error);
         });
 }
-setInterval(updateValues, 5000);
+setInterval(updateCurrentTank, refreshInterval);
 
 
-//line
-var ctxL = document.getElementById("historyChart").getContext("2d");
-var myLineChart = new Chart(ctxL, {
-  type: "line",
-  data: {
-    labels: ["1609459314", "1609459316", "1609459387"],
-    datasets: [
-    {
-      fill: 'origin',
-      label: "Water Level History",
-      data: [65, percentage, 70],
-      backgroundColor: [
-        'rgba(240, 203, 55, .2)',
-      ],
-      borderColor: [
-        'rgba(240, 203, 55, .7)',
-      ],
-      borderWidth: 2
-    }
-    ]
-  },
-  options: {
-    responsive: true
-  }
-});
+let myLineChart = null; // initialize chart variable
+
+function updateHistoryChart() {
+    fetch("/tank_history")
+        .then(response => response.json())
+        .then(values => {
+            console.log(values)
+
+            let ctxL = document.getElementById("historyChart").getContext("2d");
+
+            if (!myLineChart) { // create new chart if it doesn't exist
+                myLineChart = new Chart(ctxL, {
+                    type: "line",
+                    data: {
+                        labels: values.timestamp_history,
+                        datasets: [{
+                            fill: "origin",
+                            label: "Water Level History",
+                            data: values.percentage_history,
+                            backgroundColor: [
+                                "rgba(240, 203, 55, .2)",
+                            ],
+                            borderColor: [
+                                "rgba(240, 203, 55, .7)",
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            } else { // update existing chart with new data
+                myLineChart.data.labels = values.timestamp_history;
+                myLineChart.data.datasets[0].data = values.percentage_history;
+                myLineChart.update();
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+setInterval(updateHistoryChart, refreshInterval);
+

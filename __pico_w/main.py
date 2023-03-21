@@ -93,7 +93,7 @@ def history_handler():
         else:
             history = ujson.loads("".join(lines))
         print(f"history: {history}")
-    return history
+    return ujson.dumps(history)
 
 
 def main():
@@ -114,7 +114,7 @@ def main():
     html = "Status: OK"
 
     headers = {
-        "Content-Type": "text/html",
+        "Content-Type": "application/json",
         "Cache-Control": "no-cache",
         "Pragma": "no-cache"
     }

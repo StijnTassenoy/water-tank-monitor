@@ -6,7 +6,7 @@ import datetime
 import requests
 
 
-def get_current_tank_details(tank_url: str) -> dict:
+def get_api_tank_data(tank_url: str) -> dict:
     res = requests.get(tank_url)
     return res.json()
 
