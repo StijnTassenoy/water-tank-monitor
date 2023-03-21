@@ -1,7 +1,9 @@
 "use strict";
 
+console.log(percentage)
+
 function updateValues() {
-    fetch("/distance")
+    fetch("http://192.168.0.18/distance")
         .then(response => response.json())
         .then(values => {
             document.getElementById("fill").innerHTML = values.fill;
@@ -20,16 +22,16 @@ setInterval(updateValues, 5000);
 
 
 //line
-var ctxL = document.getElementById("historyChart").getContext('2d');
+var ctxL = document.getElementById("historyChart").getContext("2d");
 var myLineChart = new Chart(ctxL, {
-  type: 'line',
+  type: "line",
   data: {
-    labels: ["1609459314", "1609459316"],
+    labels: ["1609459314", "1609459316", "1609459387"],
     datasets: [
     {
       fill: 'origin',
       label: "Water Level History",
-      data: [65, 75],
+      data: [65, percentage, 70],
       backgroundColor: [
         'rgba(240, 203, 55, .2)',
       ],

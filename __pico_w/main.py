@@ -58,6 +58,7 @@ def distance_handler():
     distance = measure_ultrasonic()
     true_fill, percentage_fill = calculate_tank_fill(tank_height_cm, distance)
     response_body = {
+        "timestamp": str(int(utime.time())),
         "distance": str(distance),
         "fill": true_fill,
         "percentage": percentage_fill
@@ -66,7 +67,6 @@ def distance_handler():
 
     with open("history.json", "r") as f:
         lines = f.readlines()
-        print(f"lines: {lines}")
         if not lines or not lines[0].startswith("{"):
             print("[+] Creating history json...")
             history = {"history": []}
@@ -75,12 +75,7 @@ def distance_handler():
             history = ujson.loads("".join(lines))
     if len(history["history"]) >= 10:
         history["history"].pop(0)
-    history["history"].append({
-        "timestamp": str(int(utime.time())),
-        "distance": str(distance),
-        "fill": true_fill,
-        "percentage": percentage_fill
-    })
+    history["history"].append(response_body)
     with open("history.json", "w") as f:
         ujson.dump(history, f)
     print(f"[+] Added distance ({distance}) to history.")

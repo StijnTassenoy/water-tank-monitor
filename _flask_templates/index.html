@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Tank</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{url_for('static', filename='img/droplet_full.ico')}}" type="image/x-icon">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/css/screen.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/screen.css')}}">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./assets/js/script.js" defer></script>
-    <script src="./assets/js/weather.js" defer></script>
+    <script>
+        // globals for tank_data
+        let fill = "{{ tank_data["fill"] }}";
+        let percentage = {{ tank_data["percentage"] }};
+    </script>
+    <script src="{{url_for('static', filename='js/script.js')}}" defer></script>
 
 
 </head>
@@ -20,7 +24,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-            <img src="https://avatars.githubusercontent.com/u/39425214?v=4" width="30" height="30" alt="">
+            <img src="{{url_for('static', filename='img/droplet_full.ico')}}" width="30" height="30" alt="">
              Water Tank Dashboard
         </a>
     </nav>
@@ -37,10 +41,10 @@
                     <span class="sr-only">40%</span>
                     </div>
                 </div>
-                <p id="filled_percentage">Tank is filled up for: <span id="fill">{{fill}}</span>cm (<span id="percentage">{{percentage}}</span>%)</p>
+                <p id="filled_percentage">Tank is filled up for: <span id="fill">{{ tank_data["fill"] }}</span>cm (<span id="percentage">{{ tank_data["percentage"] }}</span>%)</p>
               </div>
               <div class="card-footer">
-                <small class="text-muted">Last updated: <span id="timestamptank">{{timestamp}}</span></small>
+                <small class="text-muted">Last updated: <span id="timestamptank">{{ timestamp }}</span></small>
               </div>
             </div>
 
@@ -49,23 +53,23 @@
               <div class="card-body">
                 <h5 class="card-title">Weather</h5>
                 <p class="card-text" id="current_place">
-                    <i class="bi bi-geo"></i> <span id="curr_loc">{{curr_loc}}</span>
+                    <i class="bi bi-geo"></i> <span id="curr_loc">{{ weather_data["curr_loc"] }}</span>
                 </p>
                 <p class="card-text" id="current_date">
-                    <i class="bi bi-calendar"></i> <span id="curr_date">{{curr_date}}</span>
+                    <i class="bi bi-calendar"></i> <span id="curr_date">{{ weather_data["curr_date"].split(" ")[0] }}</span>
                 </p>
                 <p class="card-text" id="current_weather">
-                    <i class="bi bi-cloud"></i> <span id="curr_weather">{{curr_weather}}</span>
+                    <i class="bi bi-cloud"></i> <span id="curr_weather">{{ weather_data["curr_weather"] }}</span>
                 </p>
                 <p class="card-text" id="current_temperature">
-                  <i class="bi bi-thermometer-half"></i> <span id="curr_temperature">{{curr_temperature}}</span>
+                  <i class="bi bi-thermometer-half"></i> <span id="curr_temperature">{{ weather_data["curr_temperature"] }}</span>
                 </p>
                 <p class="card-text" id="current_precipitation">
-                  <i class="bi bi-droplet"></i> <span id="curr_precipitation">{{timestamp}}</span>
+                  <i class="bi bi-droplet"></i> <span id="curr_precipitation">{{ weather_data["curr_precipitation"] }}</span>
                 </p>
               </div>
               <div class="card-footer">
-                <small class="text-muted">Last updated: <span id="timestampweather">{{timestamp}}</span></small>
+                <small class="text-muted">Last updated: <span id="timestampweather">{{ weather_data["curr_date"] }}</span></small>
               </div>
             </div>
 

@@ -40,6 +40,10 @@
     margin-right: auto;
 }
 
+.bg-info {
+    background-color: #56c2e3!important;
+}
+
 #historyChart{
     height: 1%;
 }
