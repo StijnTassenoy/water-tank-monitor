@@ -7,6 +7,8 @@ import socket
 import credentials
 from machine import Pin
 
+tank_height_cm = 200.00
+
 
 def connect_to_wlan(static_ip: str, ssid: str, password=None):
     wlan = network.WLAN(network.STA_IF)
@@ -44,9 +46,59 @@ def measure_ultrasonic() -> float:
 
 
 def calculate_tank_fill(tank_height: float, ultrasonic_dst: float) -> tuple[float, int]:
+    """ Calculate the height of the tank in percent and actual fill. """
     true_fill = tank_height - ultrasonic_dst
     percentage_fill = int((true_fill / tank_height) * 100)
     return true_fill, percentage_fill
+
+
+def distance_handler():
+    """ API endpoint to get the current ultrasonic measurement. """
+
+    distance = measure_ultrasonic()
+    true_fill, percentage_fill = calculate_tank_fill(tank_height_cm, distance)
+    response_body = {
+        "distance": str(distance),
+        "fill": true_fill,
+        "percentage": percentage_fill
+    }
+    print(f"[i] Measured: {str(response_body)}")
+
+    with open("history.json", "r") as f:
+        lines = f.readlines()
+        print(f"lines: {lines}")
+        if not lines or not lines[0].startswith("{"):
+            print("[+] Creating history json...")
+            history = {"history": []}
+        else:
+            print("[i] Loading history json...")
+            history = ujson.loads("".join(lines))
+    if len(history["history"]) >= 10:
+        history["history"].pop(0)
+    history["history"].append({
+        "timestamp": str(int(utime.time())),
+        "distance": str(distance),
+        "fill": true_fill,
+        "percentage": percentage_fill
+    })
+    with open("history.json", "w") as f:
+        ujson.dump(history, f)
+    print(f"[+] Added distance ({distance}) to history.")
+
+    return ujson.dumps(response_body)
+
+
+def history_handler():
+    """ API endpoint to get the ultrasonic measurement history. """
+    with open("history.json", "r") as f:
+        lines = f.readlines()
+        print(f"readlines: {lines}")
+        if not lines or not lines[0].startswith("{"):
+            history = {"history": []}
+        else:
+            history = ujson.loads("".join(lines))
+        print(f"history: {history}")
+    return history
 
 
 def main():
@@ -54,7 +106,6 @@ def main():
     password = credentials.password
     ip_address = "192.168.0.18"
     server_port = 80
-    tank_height_cm = 200.00
 
     print("Watertank Monitor...")
 
@@ -65,8 +116,7 @@ def main():
     server.listen(1)
     print("Listening on", ip_address)
 
-    with open("index.html", "r") as f:
-        html = f.read()
+    html = "Status: OK"
 
     headers = {
         "Content-Type": "text/html",
@@ -85,15 +135,9 @@ def main():
                     request_lines = request_str.split("\r\n")
                     method, path, protocol = request_lines[0].split(" ")
                     if path == "/distance":
-                        distance = measure_ultrasonic()
-                        true_fill, percentage_fill = calculate_tank_fill(tank_height_cm, distance)
-                        response_body = {
-                            "distance": str(distance),
-                            "fill": true_fill,
-                            "percentage": percentage_fill
-                        }
-                        response_body = ujson.dumps(response_body)
-                        print(response_body)
+                        response_body = distance_handler()
+                    elif path == "/history":
+                        response_body = history_handler()
                     else:
                         response_body = html
                     response = "HTTP/1.1 200 OK\r\n"
