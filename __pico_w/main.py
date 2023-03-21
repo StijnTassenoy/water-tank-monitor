@@ -1,4 +1,5 @@
 import utime
+import ntptime
 import uerrno
 import uselect
 import ujson
@@ -9,6 +10,26 @@ from machine import Pin
 
 tank_height_cm = 200.00
 
+
+def set_correct_time():
+    print("[!] Trying to set correct time...")
+    retry_count = 5
+    while retry_count > 0:
+        try:
+            print(utime.localtime())
+            ntptime.settime()
+            print(utime.localtime())
+            print("[!] Time set!")
+            break
+        except Exception as e:
+            print(f"[!] {e}")
+            print("[!] Failed to set time. Retrying...")
+            print("[!] Remaining retries: ", retry_count)
+            retry_count -= 1
+            utime.sleep(0.1)
+            if retry_count == 0:
+                print("[!] Out of retries. Continuing with incorrect time...")
+                break
 
 def connect_to_wlan(static_ip: str, ssid: str, password=None):
     wlan = network.WLAN(network.STA_IF)
@@ -105,6 +126,7 @@ def main():
     print("Watertank Monitor...")
 
     connect_to_wlan(ip_address, ssid, password)
+    set_correct_time()
 
     server = socket.socket()
     server.bind((ip_address, server_port))

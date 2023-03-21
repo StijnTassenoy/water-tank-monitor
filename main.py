@@ -1,5 +1,6 @@
 # Python Imports #
 import os
+import datetime
 
 # Third Party Imports #
 from flask import Flask, render_template
@@ -25,7 +26,7 @@ def get_tank_history() -> dict:
     tank_history = get_api_tank_data(_TANK_URL)
     for metric in tank_history["history"]:
         percentage_history.append(metric["percentage"])
-        timestamp_history.append(metric["timestamp"])
+        timestamp_history.append(str(datetime.datetime.fromtimestamp(int(metric["timestamp"]))))
     return {
         "percentage_history": percentage_history,
         "timestamp_history": timestamp_history

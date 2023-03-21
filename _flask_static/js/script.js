@@ -51,7 +51,18 @@ function updateHistoryChart() {
                         }]
                     },
                     options: {
-                        responsive: true
+                        responsive: true,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                    max: 100,
+                                    callback: function(value) {
+                                        return value.toString();
+                                    }
+                                }
+                            }]
+                        }
                     }
                 });
             } else { // update existing chart with new data
