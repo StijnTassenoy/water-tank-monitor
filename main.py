@@ -1,15 +1,20 @@
 # Python Imports #
 import os
+import time
+import asyncio
 import datetime
+import threading
 
 # Third Party Imports #
 from flask import Flask, render_template
+from dotenv import load_dotenv
 
 # water-tank-monitor Imports #
-from api_helpers import get_api_tank_data, get_openweather_api, get_details_from_api
+from helpers.api_helpers import get_api_tank_data, get_openweather_api, get_details_from_api
+from helpers.notification_helpers import send_notification
 
+load_dotenv()
 app = Flask(__name__, template_folder="./_flask_templates", static_folder="./_flask_static")
-
 
 @app.route("/tank_data")
 def get_tank_data() -> dict:
@@ -46,10 +51,30 @@ def dashboard():
     return render_template("index.html", weather_data=weather_data, tank_data=tank_data)
 
 
-def main():
-    app.run(host="0.0.0.0")
+async def main():
+    _BOT_TOKEN = str(os.environ.get("TELEGRAM_BOT_TOKEN"))
+    _TELEGRAM_CHATID = os.environ.get("TELEGRAM_CHAT_ID")
+    _API_IP_ENDPOINT = f"""http://{os.environ.get("TANK_API_URL")}/distance"""
+    _TANK_TRESHOLD = int(os.environ.get("TANK_TRESHOLD"))
+
+    loop = asyncio.get_event_loop()
+
+    # Start the Flask app
+    app_task = loop.run_in_executor(None, app.run, "0.0.0.0")
+
+    # Start the send_notification coroutine
+    notification_task = asyncio.create_task(
+        send_notification(_BOT_TOKEN, _API_IP_ENDPOINT, _TELEGRAM_CHATID, _TANK_TRESHOLD)
+    )
+
+    notification_task = asyncio.create_task(
+        send_notification(_BOT_TOKEN, _API_IP_ENDPOINT, _TELEGRAM_CHATID, _TANK_TRESHOLD)
+    )
+
+    # Wait for both tasks to finish
+    await asyncio.gather(app_task, notification_task)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 

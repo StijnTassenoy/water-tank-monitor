@@ -23,9 +23,9 @@ def get_details_from_api(api_res: dict) -> dict:
     temp = float(api_res["list"][0]["main"]["temp"])
     temp_in_c = float("{:.2f}".format(temp - 273.15))
     if api_res["list"][0].get("rain"):
-        curr_precipitation = "Rain precipitation: " + api_res["list"][0]["rain"]["3h"]
+        curr_precipitation = "Rain precipitation: " + str(api_res["list"][0]["rain"]["3h"])
     elif api_res["list"][0].get("snow"):
-        curr_precipitation = "Snow precipitation: " + api_res["list"][0]["snow"]["3h"]
+        curr_precipitation = "Snow precipitation: " + str(api_res["list"][0]["snow"]["3h"])
     else:
         curr_precipitation = "No precipitation"
     return {
